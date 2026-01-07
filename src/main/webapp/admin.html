@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .card {
+            background-color: white;
+            width: 420px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Admin Panel</h1>
+
+    <form action="responseStatus" method="post">
+        <button type="submit">Send Email to Responded Users</button>
+    </form>
+
+    <a href="responseStatus">View Response Status</a>
+</div>
+
+</body>
+</html>
