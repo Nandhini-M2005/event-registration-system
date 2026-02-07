@@ -85,43 +85,79 @@ public class ResponseStatusServlet extends HttpServlet {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
-        String subject = "Event Details – Registration Confirmed";
-        String message =
-            "Hello,\n\n" +
-            "Thank you for registering for the event!\n\n" +
-            "Event: Tech Symposium\n" +
-            "Venue: Main Auditorium\n" +
-            "Date: 15 January 2026\n" +
-            "Time: 10:00 AM\n\n" +
-            "Regards,\n" +
-            "Event Registration Team";
+        String action = request.getParameter("action");
 
         try {
             Connection con = DBConnection.getConnection();
+            PreparedStatement ps;
+            ResultSet rs;
 
-            String respondedEmails =
-                "SELECT p.email FROM participants p " +
-                "JOIN responses r ON p.email = r.email";
+            // ===============================
+            // SEND EVENT MAIL TO RESPONDED
+            // ===============================
+            if ("sendEventMail".equals(action)) {
 
-            PreparedStatement ps = con.prepareStatement(respondedEmails);
-            ResultSet rs = ps.executeQuery();
+                String subject = "Event Details – Registration Confirmed";
+                String message =
+                    "Hello,\n\n" +
+                    "Thank you for registering for the event!\n\n" +
+                    "📍 Venue: Main Auditorium\n" +
+                    "📅 Date: 15 January 2026\n" +
+                    "⏰ Time: 10:00 AM\n\n" +
+                    "Regards,\nEvent Team";
 
-            int count = 0;
+                String sql =
+                    "SELECT p.email FROM participants p " +
+                    "JOIN responses r ON p.email = r.email";
 
-            while (rs.next()) {
-                String email = rs.getString("email");
-                EmailUtil.sendEmail(email, subject, message);
-                count++;
+                ps = con.prepareStatement(sql);
+                rs = ps.executeQuery();
+
+                int count = 0;
+                while (rs.next()) {
+                    EmailUtil.sendEmail(rs.getString("email"), subject, message);
+                    count++;
+                }
+
+                out.println("<h3>Event details sent to " + count + " responded users</h3>");
             }
 
-            out.println("<h3>✅ Emails sent successfully to " + count + " responded users</h3>");
-            out.println("<a href='admin.html'>Back to Admin</a>");
+            // ===============================
+            // SEND REMINDER TO UNRESPONDED
+            // ===============================
+            else if ("sendReminderMail".equals(action)) {
 
+                String subject = "Reminder: Please Register for the Event";
+                String message =
+                    "Hello,\n\n" +
+                    "You are invited to our upcoming event, but we noticed you haven't registered yet.\n\n" +
+                    "Please fill the registration form at the earliest.\n\n" +
+                    "📍 Event: Tech Symposium\n" +
+                    "📅 Date: 15 January 2026\n\n" +
+                    "Regards,\nEvent Team";
+
+                String sql =
+                    "SELECT p.email FROM participants p " +
+                    "LEFT JOIN responses r ON p.email = r.email " +
+                    "WHERE r.email IS NULL";
+
+                ps = con.prepareStatement(sql);
+                rs = ps.executeQuery();
+
+                int count = 0;
+                while (rs.next()) {
+                    EmailUtil.sendEmail(rs.getString("email"), subject, message);
+                    count++;
+                }
+
+                out.println("<h3>Reminder email sent to " + count + " unresponded users</h3>");
+            }
+
+            out.println("<br><a href='admin.html'>Back to Admin</a>");
             con.close();
 
         } catch (Exception e) {
-            out.println("<h3>Error sending emails</h3>");
-            out.println(e.getMessage());
+            out.println("Error: " + e.getMessage());
         }
     }
 }
