@@ -22,5 +22,10 @@ The Event Registration System is a web-based application that allows users to re
 - Server: Apache Tomcat
 - IDE: Eclipse
 
+## Database Schema Diagram
+
+https://drawsql.app/teams/compant/diagrams/event-registration-system
+
+
 
 
